@@ -1,5 +1,9 @@
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { FiArrowLeft, FiCalendar, FiCheckCircle, FiClock, FiMap, FiXCircle } from 'react-icons/fi';
 import { Link, useParams } from 'react-router-dom';
+
+type PackageType = 'adventure' | 'cultural' | 'relax' | 'food';
 
 interface Itinerary {
   day: number;
@@ -18,10 +22,20 @@ interface PackageDetails {
   duration: string;
   price: number;
   image: string;
+  type: PackageType[];
+  location: string;
   itinerary: Itinerary[];
   included: string[];
   excluded: string[];
 }
+
+// Map package types to colors
+const typeColors: Record<PackageType, string> = {
+  adventure: 'bg-blue-500',
+  cultural: 'bg-purple-500',
+  relax: 'bg-green-500',
+  food: 'bg-orange-500'
+};
 
 const packageDetails: Record<string, PackageDetails> = {
   'etna-taormina': {
@@ -31,7 +45,9 @@ const packageDetails: Record<string, PackageDetails> = {
     description: 'Experience the perfect blend of natural wonders and historic beauty as you explore Europe\'s highest active volcano and Sicily\'s most charming coastal town. This all-inclusive package combines thrilling adventure, cultural immersion, and relaxation in one unforgettable journey.',
     duration: '7 days',
     price: 1299,
-    image: 'https://images.unsplash.com/photo-1634979079856-e6516bf0dcc4?q=80&w=1600',
+    image: 'https://images.unsplash.com/photo-1615147342761-9238e15d8b96?q=80&w=2000',
+    type: ['adventure', 'cultural'],
+    location: 'Eastern Sicily',
     itinerary: [
       {
         day: 1,
@@ -115,17 +131,19 @@ const packageDetails: Record<string, PackageDetails> = {
 };
 
 const PackageDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { packageId } = useParams<{ packageId: string }>();
   const [packageData, setPackageData] = useState<PackageDetails | null>(null);
   const [activeDay, setActiveDay] = useState(1);
 
   useEffect(() => {
     // In a real app, this would be an API call
-    if (id && packageDetails[id]) {
-      setPackageData(packageDetails[id]);
+    if (packageId && packageDetails[packageId]) {
+      setPackageData(packageDetails[packageId]);
       setActiveDay(1);
+      // Scroll to top on new package load
+      window.scrollTo(0, 0);
     }
-  }, [id]);
+  }, [packageId]);
 
   if (!packageData) {
     return (
@@ -142,7 +160,7 @@ const PackageDetail = () => {
   return (
     <div>
       {/* Hero Banner */}
-      <section className="relative h-[50vh] md:h-[60vh]">
+      <section className="relative h-[50vh] md:h-[65vh]">
         <div 
           className="absolute inset-0 z-0"
           style={{
@@ -151,27 +169,54 @@ const PackageDetail = () => {
             backgroundPosition: 'center',
           }}
         />
-        <div className="absolute inset-0 bg-black/40 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/30 z-10"></div>
         
         <div className="relative z-20 container-custom h-full flex flex-col justify-end pb-16">
-          <div className="text-white">
-            <h1 className="text-4xl md:text-5xl font-bold font-montserrat mb-2">{packageData.title}</h1>
-            <p className="text-xl md:text-2xl">{packageData.subtitle}</p>
-            <div className="flex flex-wrap items-center gap-6 mt-4">
+          {/* Back button */}
+          <Link 
+            to="/packages" 
+            className="inline-flex items-center text-white mb-8 hover:text-primary transition-colors"
+          >
+            <FiArrowLeft className="mr-2" />
+            Back to all packages
+          </Link>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-white"
+          >
+            {/* Type tags */}
+            <div className="flex gap-3 mb-4">
+              {packageData.type.map(type => (
+                <span 
+                  key={type} 
+                  className={`${typeColors[type]} text-white text-xs font-semibold px-3 py-1 rounded-full`}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </span>
+              ))}
+            </div>
+
+            <h1 className="text-4xl md:text-6xl font-bold font-montserrat mb-2">{packageData.title}</h1>
+            <p className="text-xl md:text-2xl text-gray-200 mb-6">{packageData.subtitle}</p>
+            
+            <div className="flex flex-wrap items-center gap-6 mt-4 text-gray-200">
               <p className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                </svg>
+                <FiCalendar className="w-5 h-5 mr-2" />
                 {packageData.duration}
               </p>
               <p className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                From €{packageData.price}
+                <FiMap className="w-5 h-5 mr-2" />
+                {packageData.location}
+              </p>
+              <p className="flex items-center text-white font-bold text-xl">
+                <span className="mr-2">€{packageData.price}</span>
+                <span className="text-sm font-normal text-gray-300">per person</span>
               </p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -188,8 +233,11 @@ const PackageDetail = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                 {/* What's Included */}
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h3 className="text-xl font-bold font-montserrat text-primary mb-4">What's Included</h3>
+                <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+                  <h3 className="text-xl font-bold font-montserrat text-primary mb-4 flex items-center">
+                    <FiCheckCircle className="mr-2 text-green-500" />
+                    What's Included
+                  </h3>
                   <ul className="space-y-2">
                     {packageData.included.map((item, idx) => (
                       <li key={idx} className="flex items-start">
@@ -203,8 +251,11 @@ const PackageDetail = () => {
                 </div>
                 
                 {/* What's Not Included */}
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h3 className="text-xl font-bold font-montserrat text-primary mb-4">Not Included</h3>
+                <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+                  <h3 className="text-xl font-bold font-montserrat text-primary mb-4 flex items-center">
+                    <FiXCircle className="mr-2 text-red-500" />
+                    Not Included
+                  </h3>
                   <ul className="space-y-2">
                     {packageData.excluded.map((item, idx) => (
                       <li key={idx} className="flex items-start">
@@ -221,19 +272,21 @@ const PackageDetail = () => {
             
             {/* Right Column - Booking Form */}
             <div>
-              <div className="bg-primary text-white p-6 rounded-lg sticky top-20">
-                <h3 className="text-2xl font-bold font-montserrat mb-4">Book This Package</h3>
-                <p className="mb-6">From <span className="text-3xl font-bold">€{packageData.price}</span> per person</p>
+              <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-lg sticky top-24">
+                <div className="bg-primary text-white p-5 -mt-10 rounded-lg shadow-md mb-6">
+                  <h3 className="text-2xl font-bold font-montserrat mb-2">Book This Package</h3>
+                  <p className="mb-0">From <span className="text-3xl font-bold">€{packageData.price}</span> per person</p>
+                </div>
                 
                 <form className="space-y-4">
                   <div>
-                    <label className="block mb-1 text-sm">Travel Date</label>
-                    <input type="date" className="w-full p-2 rounded text-gray-800" required />
+                    <label className="block mb-1 text-sm font-medium">Travel Date</label>
+                    <input type="date" className="w-full p-3 border rounded focus:ring-2 focus:ring-primary focus:outline-none" required />
                   </div>
                   
                   <div>
-                    <label className="block mb-1 text-sm">Number of Travelers</label>
-                    <select className="w-full p-2 rounded text-gray-800" required>
+                    <label className="block mb-1 text-sm font-medium">Number of Travelers</label>
+                    <select className="w-full p-3 border rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
                       <option value="1">1 Person</option>
                       <option value="2">2 People</option>
                       <option value="3">3 People</option>
@@ -243,28 +296,28 @@ const PackageDetail = () => {
                   </div>
                   
                   <div>
-                    <label className="block mb-1 text-sm">Full Name</label>
-                    <input type="text" className="w-full p-2 rounded text-gray-800" placeholder="Your Name" required />
+                    <label className="block mb-1 text-sm font-medium">Full Name</label>
+                    <input type="text" className="w-full p-3 border rounded focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Your Name" required />
                   </div>
                   
                   <div>
-                    <label className="block mb-1 text-sm">Email</label>
-                    <input type="email" className="w-full p-2 rounded text-gray-800" placeholder="email@example.com" required />
+                    <label className="block mb-1 text-sm font-medium">Email</label>
+                    <input type="email" className="w-full p-3 border rounded focus:ring-2 focus:ring-primary focus:outline-none" placeholder="email@example.com" required />
                   </div>
                   
                   <div>
-                    <label className="block mb-1 text-sm">Special Requirements</label>
-                    <textarea className="w-full p-2 rounded text-gray-800" rows={3} placeholder="Dietary requirements, accessibility needs, etc."></textarea>
+                    <label className="block mb-1 text-sm font-medium">Special Requirements</label>
+                    <textarea className="w-full p-3 border rounded focus:ring-2 focus:ring-primary focus:outline-none" rows={3} placeholder="Dietary requirements, accessibility needs, etc."></textarea>
                   </div>
                   
-                  <button type="submit" className="w-full py-3 bg-secondary text-white rounded font-bold">
+                  <button type="submit" className="w-full py-3 bg-secondary text-white rounded-lg font-bold shadow-md hover:bg-secondary/90 transition-colors">
                     Book Now
                   </button>
                 </form>
                 
-                <div className="mt-6 text-center text-sm">
-                  <p>Need help? Contact us:</p>
-                  <a href="tel:+391234567890" className="block mt-2 text-white">
+                <div className="mt-6 text-center">
+                  <p className="text-gray-600 text-sm">Need help? Contact us:</p>
+                  <a href="tel:+391234567890" className="block mt-2 text-primary font-bold text-lg">
                     +39 123 456 7890
                   </a>
                 </div>
@@ -277,118 +330,143 @@ const PackageDetail = () => {
       {/* Itinerary */}
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold font-montserrat text-primary mb-10 text-center">
-            Your Day-by-Day Itinerary
-          </h2>
-          
-          {/* Day selector */}
-          <div className="flex overflow-x-auto mb-8 pb-4">
-            <div className="flex space-x-4">
-              {packageData.itinerary.map((day) => (
-                <button
-                  key={day.day}
-                  onClick={() => setActiveDay(day.day)}
-                  className={`px-5 py-2 rounded-full flex-shrink-0 transition-all ${
-                    activeDay === day.day
-                      ? 'bg-primary text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  Day {day.day}
-                </button>
-              ))}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h2 className="text-3xl font-bold font-montserrat text-primary mb-10 text-center flex items-center justify-center">
+              <FiClock className="mr-3" />
+              Your Day-by-Day Itinerary
+            </h2>
+            
+            {/* Day selector */}
+            <div className="flex overflow-x-auto mb-8 pb-4">
+              <div className="flex space-x-4">
+                {packageData.itinerary.map((day) => (
+                  <button
+                    key={day.day}
+                    onClick={() => setActiveDay(day.day)}
+                    className={`px-5 py-3 rounded-full flex-shrink-0 transition-all font-medium ${
+                      activeDay === day.day
+                        ? 'bg-primary text-white shadow-md'
+                        : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    }`}
+                  >
+                    Day {day.day}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-          
-          {/* Active day details */}
-          {packageData.itinerary.map((day) => (
-            <div
-              key={day.day}
-              className={`${activeDay === day.day ? 'block' : 'hidden'}`}
-            >
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-2xl font-bold font-montserrat text-primary mb-2">
-                  Day {day.day}: {day.title}
-                </h3>
-                
-                <p className="text-gray-700 mb-6">{day.description}</p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Activities */}
-                  <div>
-                    <h4 className="font-bold text-lg mb-3 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2 text-primary">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-                      </svg>
-                      Activities
-                    </h4>
-                    <ul className="space-y-2">
-                      {day.activities.map((activity, idx) => (
-                        <li key={idx} className="flex items-start">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 mr-2 text-primary flex-shrink-0 mt-1">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                          </svg>
-                          <span>{activity}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+            
+            {/* Active day details */}
+            {packageData.itinerary.map((day) => (
+              <motion.div
+                key={day.day}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ 
+                  opacity: activeDay === day.day ? 1 : 0,
+                  y: activeDay === day.day ? 0 : 10,
+                  display: activeDay === day.day ? 'block' : 'none'
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="bg-white p-8 rounded-xl shadow-md">
+                  <h3 className="text-2xl font-bold font-montserrat text-primary mb-3">
+                    Day {day.day}: {day.title}
+                  </h3>
                   
-                  {/* Accommodation */}
-                  <div>
-                    <h4 className="font-bold text-lg mb-3 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2 text-primary">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                      </svg>
-                      Accommodation
-                    </h4>
-                    <p className="text-gray-700">
-                      {day.accommodation || 'Departure day (no accommodation)'}
-                    </p>
-                  </div>
+                  <p className="text-gray-700 mb-8 text-lg">{day.description}</p>
                   
-                  {/* Meals */}
-                  <div>
-                    <h4 className="font-bold text-lg mb-3 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2 text-primary">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75-1.5.75a3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0L3 16.5m15-3.38a48.474 48.474 0 0 0-6-.37c-2.032 0-4.034.125-6 .37m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.17c0 .62-.504 1.124-1.125 1.124H4.125A1.125 1.125 0 0 1 3 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 0 1 6 13.12M12.265 3.11a.375.375 0 1 1-.53 0L12 2.845l.265.265Zm-3 0a.375.375 0 1 1-.53 0L9 2.845l.265.265Zm6 0a.375.375 0 1 1-.53 0L15 2.845l.265.265Z" />
-                      </svg>
-                      Meals
-                    </h4>
-                    <div className="flex space-x-3">
-                      <span className={`px-3 py-1 rounded-full text-xs ${day.meals.includes('Breakfast') ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-400'}`}>
-                        Breakfast
-                      </span>
-                      <span className={`px-3 py-1 rounded-full text-xs ${day.meals.includes('Lunch') ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-400'}`}>
-                        Lunch
-                      </span>
-                      <span className={`px-3 py-1 rounded-full text-xs ${day.meals.includes('Dinner') ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-400'}`}>
-                        Dinner
-                      </span>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {/* Activities */}
+                    <div className="bg-gray-50 p-5 rounded-lg">
+                      <h4 className="font-bold text-lg mb-4 flex items-center text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2 text-primary">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                        </svg>
+                        Activities
+                      </h4>
+                      <ul className="space-y-3">
+                        {day.activities.map((activity, idx) => (
+                          <li key={idx} className="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 mr-2 text-primary flex-shrink-0 mt-1">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                            <span className="text-gray-700">{activity}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Accommodation */}
+                    <div className="bg-gray-50 p-5 rounded-lg">
+                      <h4 className="font-bold text-lg mb-4 flex items-center text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2 text-primary">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                        </svg>
+                        Accommodation
+                      </h4>
+                      <p className="text-gray-700">
+                        {day.accommodation || 'Departure day (no accommodation)'}
+                      </p>
+                    </div>
+                    
+                    {/* Meals */}
+                    <div className="bg-gray-50 p-5 rounded-lg">
+                      <h4 className="font-bold text-lg mb-4 flex items-center text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2 text-primary">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75-1.5.75a3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0L3 16.5m15-3.38a48.474 48.474 0 0 0-6-.37c-2.032 0-4.034.125-6 .37m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.17c0 .62-.504 1.124-1.125 1.124H4.125A1.125 1.125 0 0 1 3 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 0 1 6 13.12M12.265 3.11a.375.375 0 1 1-.53 0L12 2.845l.265.265Zm-3 0a.375.375 0 1 1-.53 0L9 2.845l.265.265Zm6 0a.375.375 0 1 1-.53 0L15 2.845l.265.265Z" />
+                        </svg>
+                        Meals
+                      </h4>
+                      <div className="flex flex-wrap gap-3">
+                        <span className={`px-4 py-2 rounded-full text-sm font-medium ${day.meals.includes('Breakfast') ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-400'}`}>
+                          Breakfast
+                        </span>
+                        <span className={`px-4 py-2 rounded-full text-sm font-medium ${day.meals.includes('Lunch') ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-400'}`}>
+                          Lunch
+                        </span>
+                        <span className={`px-4 py-2 rounded-full text-sm font-medium ${day.meals.includes('Dinner') ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-400'}`}>
+                          Dinner
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-primary text-white">
+      <section className="py-20 bg-gradient-to-r from-primary to-primary/80 text-white">
         <div className="container-custom text-center">
-          <h2 className="text-3xl font-bold font-montserrat mb-6">Ready for Your Sicilian Adventure?</h2>
-          <p className="text-lg max-w-2xl mx-auto mb-8">
-            Book this package now and let us handle everything. All you need to do is arrive and enjoy.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a href="#booking" className="bg-secondary text-white px-8 py-3 rounded font-bold hover:bg-secondary/90 transition-colors">
-              Book Now
-            </a>
-            <Link to="/contact" className="bg-white text-primary px-8 py-3 rounded font-bold hover:bg-gray-100 transition-colors">
-              Ask a Question
-            </Link>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <h2 className="text-4xl font-bold font-montserrat mb-6">Ready for Your Sicilian Adventure?</h2>
+            <p className="text-xl max-w-2xl mx-auto mb-10 text-white/90">
+              Book this package now and let us handle everything. All you need to do is arrive and enjoy.
+            </p>
+            <div className="flex flex-wrap justify-center gap-6">
+              <a 
+                href="#booking" 
+                className="bg-secondary text-white px-10 py-4 rounded-lg font-bold hover:bg-secondary/90 transition-colors shadow-lg"
+              >
+                Book Now
+              </a>
+              <Link 
+                to="/contact" 
+                className="bg-white text-primary px-10 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
+              >
+                Ask a Question
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>
