@@ -1,8 +1,16 @@
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const Home = () => {
   return (
     <div>
+      <SEO 
+        title="Home" 
+        description="Discover Sicily with JustSicily - Your complete travel experience in Sicily with expertly curated packages, accommodation, transport, and unique experiences."
+        canonicalUrl="https://justsicily.com/"
+        ogImage="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=2000&auto=format&fit=crop"
+      />
+    
       {/* Hero Section */}
       <section className="relative min-h-screen bg-cover bg-center" style={{ 
         backgroundImage: `url("https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=2000&auto=format&fit=crop")`,

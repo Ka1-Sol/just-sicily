@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { FiCalendar, FiMap, FiSearch, FiTag } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 type PackageType = 'all' | 'adventure' | 'cultural' | 'relax' | 'food';
 
@@ -123,6 +124,13 @@ const Packages = () => {
 
   return (
     <div>
+      <SEO 
+        title="Tour Packages" 
+        description="Explore our curated travel packages for Sicily with expert guides, authentic experiences, and unforgettable memories."
+        canonicalUrl="https://justsicily.com/packages"
+        ogImage="https://cdn.pixabay.com/photo/2019/01/17/08/03/sicily-3937734_1280.jpg"
+      />
+      
       {/* Hero Section */}
       <section className="relative h-[50vh] md:h-[60vh] bg-gray-800">
         {/* Background Image */}

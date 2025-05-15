@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { FiArrowLeft, FiCalendar, FiCheckCircle, FiClock, FiMap, FiXCircle } from 'react-icons/fi';
 import { Link, useParams } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 type PackageType = 'adventure' | 'cultural' | 'relax' | 'food';
 
@@ -148,6 +149,11 @@ const PackageDetail = () => {
   if (!packageData) {
     return (
       <div className="container-custom py-20 text-center">
+        <SEO 
+          title="Package Not Found" 
+          description="The travel package you're looking for doesn't exist or has been removed."
+          canonicalUrl={`https://justsicily.com/packages/${packageId || ''}`}
+        />
         <h2 className="text-2xl font-bold">Package not found</h2>
         <p className="mt-4">The package you're looking for doesn't exist or has been removed.</p>
         <Link to="/packages" className="btn-primary mt-8 inline-block">
@@ -159,6 +165,14 @@ const PackageDetail = () => {
 
   return (
     <div>
+      <SEO 
+        title={packageData.title} 
+        description={packageData.description}
+        canonicalUrl={`https://justsicily.com/packages/${packageData.id}`}
+        ogImage={packageData.image}
+        ogType="product"
+      />
+      
       {/* Hero Banner */}
       <section className="relative h-[50vh] md:h-[65vh]">
         <div 
