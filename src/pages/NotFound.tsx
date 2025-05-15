@@ -16,14 +16,6 @@ const NotFound = () => {
           >
             Return to Homepage
           </Link>
-          <div className="mt-4">
-            <Link 
-              to="/contact" 
-              className="text-primary hover:underline"
-            >
-              Contact Us for Help
-            </Link>
-          </div>
         </div>
       </div>
     </div>

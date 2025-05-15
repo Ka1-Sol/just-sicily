@@ -7,8 +7,7 @@ import { Layout } from './components/layout';
 
 // Pages
 import About from './pages/About';
-import Contact from './pages/Contact';
-import Experiences from './pages/Experiences';
+import TravelGuide from './pages/Experiences';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import PackageDetail from './pages/PackageDetail';
@@ -24,8 +23,8 @@ function App() {
             <Route path="/packages" element={<Packages />} />
             <Route path="/packages/:packageId" element={<PackageDetail />} />
             <Route path="/about" element={<About />} />
-            <Route path="/experiences" element={<Experiences />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path="/experiences" element={<TravelGuide />} />
+            <Route path="/travel-guide" element={<TravelGuide />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

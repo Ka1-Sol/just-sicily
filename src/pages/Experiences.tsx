@@ -1,179 +1,105 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
+import { BackgroundImage, Image } from '../components/ui';
 
-type ExperienceCategory = 'all' | 'etna' | 'coastal' | 'food' | 'cultural';
-
-interface Experience {
+// Interfacce per i dati
+interface GuideCard {
   id: string;
   title: string;
   description: string;
   image: string;
-  duration: string;
-  price: number;
-  category: ExperienceCategory[];
-  location: string;
+  ctaText: string;
+  ctaLink: string;
+  ctaPackage: string;
 }
 
-const experiences: Experience[] = [
-  // Etna Tours
+// Dati delle guide
+const guideCards: GuideCard[] = [
   {
-    id: 'etna-summit-trek',
-    title: 'Etna Summit Trek',
-    description: 'A challenging hike to the summit craters of Europe\'s most active volcano with expert volcanologist guides.',
+    id: 'best-time',
+    title: 'Best Time to Visit Sicily',
+    description: 'Sicily enjoys a Mediterranean climate with over 300 days of sunshine per year. Spring (April-May) and Fall (September-October) offer perfect weather and fewer crowds. Summer is ideal for beaches but can be hot. Winter is mild and perfect for cultural exploration. Our packages are designed to make the most of each season\'s unique offerings.',
+    image: 'https://images.unsplash.com/photo-1523365280197-dbf36cc288c8?q=80&w=800',
+    ctaText: 'Plan your perfect trip with our packages',
+    ctaLink: '/packages',
+    ctaPackage: 'seasonal'
+  },
+  {
+    id: 'beaches',
+    title: 'Sicily\'s Most Beautiful Beaches',
+    description: 'From the white sands of San Vito Lo Capo to the crystal waters of Scala dei Turchi, Sicily\'s coastline offers some of the Mediterranean\'s most stunning beaches. Discover hidden coves only accessible by boat, popular resort beaches with full amenities, and dramatic rocky shores with turquoise waters. Our coastal packages include visits to the most spectacular beaches.',
+    image: 'https://images.unsplash.com/photo-1516091877740-fde016699f2c?q=80&w=800',
+    ctaText: 'Included in our coastal packages',
+    ctaLink: '/packages',
+    ctaPackage: 'coastal'
+  },
+  {
+    id: 'etna',
+    title: 'Mount Etna: Europe\'s Most Active Volcano',
+    description: 'Towering at 3,326 meters, Mount Etna is Europe\'s tallest active volcano and one of Sicily\'s most iconic natural wonders. Visit lunar-like landscapes, hike along ancient craters, or take a cable car to higher elevations for breathtaking views. The fertile volcanic soil supports excellent vineyards and agriculture. Our guided Etna tours offer safe and informative experiences on this majestic volcano.',
     image: 'https://images.unsplash.com/photo-1639158397551-5e17deb618e4?q=80&w=800',
-    duration: '8 hours',
-    price: 120,
-    category: ['etna'],
-    location: 'Mount Etna',
+    ctaText: 'Explore Etna with our guided tours',
+    ctaLink: '/packages/etna-taormina',
+    ctaPackage: 'adventure'
   },
   {
-    id: 'etna-sunset-jeep',
-    title: 'Etna Sunset Jeep Tour',
-    description: 'Experience the magic of sunset on Mount Etna with a 4x4 jeep tour and wine tasting at a local vineyard.',
-    image: 'https://images.unsplash.com/photo-1565561805062-4066ba1b7166?q=80&w=800',
-    duration: '6 hours',
-    price: 95,
-    category: ['etna', 'food'],
-    location: 'Mount Etna',
+    id: 'food',
+    title: 'Sicilian Food You Must Try',
+    description: 'From arancini to cannoli, Sicilian cuisine blends Italian, Arabic, and Greek influences into something uniquely delicious. Must-try dishes include pasta alla Norma, caponata, and fresh seafood. Street markets in Palermo and Catania offer authentic tastings. Experience these authentic flavors with our food & wine packages that include cooking classes, market tours, and dining at local trattorias.',
+    image: 'https://images.unsplash.com/photo-1606855637555-1e292168a1b7?q=80&w=800',
+    ctaText: 'Taste Sicily with our food & wine packages',
+    ctaLink: '/packages',
+    ctaPackage: 'food'
   },
   {
-    id: 'etna-caves-exploration',
-    title: 'Etna Lava Caves Exploration',
-    description: 'Discover the hidden lava caves beneath Mount Etna with helmet and torch, led by expert geology guides.',
-    image: 'https://images.unsplash.com/photo-1510279931157-4ca63af8a363?q=80&w=800',
-    duration: '4 hours',
-    price: 75,
-    category: ['etna'],
-    location: 'Mount Etna',
-  },
-  
-  // Coastal Experiences
-  {
-    id: 'taormina-boat-tour',
-    title: 'Taormina Coast Boat Tour',
-    description: 'Cruise along the stunning Taormina coastline with stops for swimming in the crystal-clear waters of the Blue Grotto.',
-    image: 'https://images.unsplash.com/photo-1505881502353-a1986add4762?q=80&w=800',
-    duration: '5 hours',
-    price: 85,
-    category: ['coastal'],
-    location: 'Taormina',
+    id: 'unesco',
+    title: 'UNESCO Sites & Ancient History',
+    description: 'Sicily boasts an impressive collection of UNESCO World Heritage sites, including the Valley of the Temples in Agrigento, the Villa Romana del Casale with its extraordinary mosaics, and the late Baroque towns of the Val di Noto. These sites showcase Sicily\'s extraordinary 3,000-year history influenced by Greeks, Romans, Arabs, Normans and more. Our cultural packages include expert guided tours of these historical treasures.',
+    image: 'https://images.unsplash.com/photo-1588394912026-1ee67109fb92?q=80&w=800',
+    ctaText: 'Discover history in our cultural packages',
+    ctaLink: '/packages',
+    ctaPackage: 'cultural'
   },
   {
-    id: 'aeolian-islands-day',
-    title: 'Aeolian Islands Day Trip',
-    description: 'Visit the stunning volcanic Aeolian Islands of Lipari and Vulcano with time for mud baths, beaches, and local cuisine.',
-    image: 'https://images.unsplash.com/photo-1567343141251-a3eeee0d2795?q=80&w=800',
-    duration: 'Full day',
-    price: 150,
-    category: ['coastal'],
-    location: 'Aeolian Islands',
-  },
-  {
-    id: 'syracuse-sailing',
-    title: 'Syracuse Harbor Sailing',
-    description: 'Sail around the historic Syracuse harbor and the island of Ortigia aboard a traditional wooden sailing boat.',
-    image: 'https://images.unsplash.com/photo-1569263900347-06b1e8c825ab?q=80&w=800',
-    duration: '3 hours',
-    price: 70,
-    category: ['coastal', 'cultural'],
-    location: 'Syracuse',
-  },
-  
-  // Food & Wine Experiences
-  {
-    id: 'catania-market-cooking',
-    title: 'Catania Market Tour & Cooking Class',
-    description: 'Visit the historic fish market of Catania followed by a hands-on cooking class to prepare traditional Sicilian dishes.',
-    image: 'https://images.unsplash.com/photo-1484659619207-9165d119dafe?q=80&w=800',
-    duration: '6 hours',
-    price: 110,
-    category: ['food'],
-    location: 'Catania',
-  },
-  {
-    id: 'etna-wine-tasting',
-    title: 'Etna Wine Tasting Tour',
-    description: 'Sample the unique volcanic wines of the Etna region with visits to three premier wineries and vineyard tours.',
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=800',
-    duration: '7 hours',
-    price: 125,
-    category: ['food', 'etna'],
-    location: 'Mount Etna',
-  },
-  {
-    id: 'street-food-palermo',
-    title: 'Palermo Street Food Tour',
-    description: 'Taste your way through Palermo\'s historic center and markets with local street food specialties and cultural insights.',
-    image: 'https://images.unsplash.com/photo-1560781065-18a87193ab46?q=80&w=800',
-    duration: '4 hours',
-    price: 65,
-    category: ['food'],
-    location: 'Palermo',
-  },
-  
-  // Cultural Experiences
-  {
-    id: 'valley-temples-tour',
-    title: 'Valley of the Temples Tour',
-    description: 'Guided walk through the UNESCO World Heritage Valley of the Temples with an archaeology expert.',
-    image: 'https://images.unsplash.com/photo-1612208654387-c4fafc804598?q=80&w=800',
-    duration: '5 hours',
-    price: 85,
-    category: ['cultural'],
-    location: 'Agrigento',
-  },
-  {
-    id: 'baroque-towns-day',
-    title: 'Baroque Towns Day Trip',
-    description: 'Explore the stunning baroque architecture of Noto, Modica, and Ragusa Ibla with a local art historian.',
-    image: 'https://images.unsplash.com/photo-1592679959750-78e1c5377069?q=80&w=800',
-    duration: 'Full day',
-    price: 130,
-    category: ['cultural'],
-    location: 'Val di Noto',
-  },
-  {
-    id: 'godfather-tour',
-    title: 'The Godfather Tour',
-    description: 'Visit the authentic Sicilian villages where The Godfather was filmed, with stories and local traditions.',
-    image: 'https://images.unsplash.com/photo-1564417947365-8dbc9d0e718e?q=80&w=800',
-    duration: '6 hours',
-    price: 90,
-    category: ['cultural'],
-    location: 'Savoca & Forza d\'Agrò',
-  },
+    id: 'traditions',
+    title: 'Local Traditions & Festivals',
+    description: 'Experience Sicily\'s vibrant culture through its colorful festivals and traditions. From the elaborate Holy Week processions to summer food festivals celebrating local specialties, there\'s always a celebration happening somewhere on the island. Folk traditions, puppet theaters, and artisan crafts offer glimpses into Sicily\'s rich cultural heritage. Our packages often coincide with major festivals to enhance your cultural experience.',
+    image: 'https://images.unsplash.com/photo-1574694413671-41a9651cdc5e?q=80&w=800',
+    ctaText: 'Experience traditions with JustSicily',
+    ctaLink: '/packages',
+    ctaPackage: 'cultural'
+  }
 ];
 
-const Experiences = () => {
-  const [activeCategory, setActiveCategory] = useState<ExperienceCategory>('all');
-  
-  const filteredExperiences = activeCategory === 'all' 
-    ? experiences 
-    : experiences.filter(exp => exp.category.includes(activeCategory));
-  
-  const categories: { id: ExperienceCategory; name: string }[] = [
-    { id: 'all', name: 'All Experiences' },
-    { id: 'etna', name: 'Etna Tours' },
-    { id: 'coastal', name: 'Coastal Experiences' },
-    { id: 'food', name: 'Food & Wine' },
-    { id: 'cultural', name: 'Cultural Sites' },
-  ];
-  
+// Animation variant
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6 }
+  }
+};
+
+const TravelGuide = () => {
   return (
     <div>
+      <SEO 
+        title="Sicily Travel Guide" 
+        description="Complete guide to Sicily: best time to visit, beaches, Etna, food, and culture. Plan your perfect Sicily trip with JustSicily."
+        canonicalUrl="https://justsicily.com/travel-guide"
+      />
+      
       {/* Hero Banner */}
-      <section className="relative h-[40vh] md:h-[50vh] bg-gray-800">
+      <section className="relative h-[50vh] md:h-[60vh] bg-gray-800">
         {/* Background Image */}
-        <div 
+        <BackgroundImage 
+          src="https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?q=80&w=2000&auto=format&fit=crop"
           className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: 'url("https://images.unsplash.com/photo-1495573258723-2c7be7a646ce?q=80&w=2000&auto=format&fit=crop")', 
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'brightness(0.7)',
-          }}
+          fallbackSrc="https://placehold.co/1200x800/0066CC/FFFFFF?text=Discover+Sicily" 
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/30 z-10"></div>
         
         {/* Content */}
         <div className="relative z-20 container-custom h-full flex flex-col justify-center">
@@ -181,122 +107,106 @@ const Experiences = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-white"
+            className="text-white max-w-3xl"
           >
-            <h1 className="text-4xl md:text-5xl font-bold font-montserrat mb-4">Sicily Experiences</h1>
-            <p className="text-lg md:text-xl max-w-xl">
-              Unforgettable authentic activities led by local experts and passionate guides.
+            <h1 className="text-4xl md:text-6xl font-bold font-montserrat mb-4">Discover Sicily</h1>
+            <p className="text-lg md:text-xl max-w-2xl">
+              Your comprehensive guide to Sicily's best experiences, from ancient temples to volcanic adventures
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Category Navigation */}
-      <section className="sticky top-0 z-40 bg-white shadow-md">
-        <div className="container-custom py-4">
-          <div className="flex overflow-x-auto space-x-4 pb-2">
-            {categories.map(category => (
-              <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                className={`px-5 py-2 rounded-full whitespace-nowrap transition-all ${
-                  activeCategory === category.id
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Experiences Grid */}
+      {/* Guide Cards */}
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold font-montserrat text-primary mb-4">
-              {categories.find(c => c.id === activeCategory)?.name}
-            </h2>
-            <p className="text-gray-700">
-              {activeCategory === 'all' && 'Discover the best experiences Sicily has to offer, from volcanic adventures to cultural treasures.'}
-              {activeCategory === 'etna' && 'Explore Europe\'s most active volcano with expert guides. Trek to the summit, ride jeeps across lunar landscapes, or discover hidden lava caves.'}
-              {activeCategory === 'coastal' && 'Experience Sicily\'s stunning coastline with boat tours, island hopping, and sailing adventures along crystal-clear waters.'}
-              {activeCategory === 'food' && 'Savor authentic Sicilian flavors with cooking classes, market tours, wine tastings, and street food adventures.'}
-              {activeCategory === 'cultural' && 'Immerse yourself in Sicily\'s rich history and culture with guided tours of ancient sites, baroque towns, and iconic filming locations.'}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeIn}
+            className="mb-12"
+          >
+            <h2 className="text-3xl font-bold font-montserrat text-primary mb-4 text-center">Sicily Travel Guide</h2>
+            <p className="text-gray-700 max-w-3xl mx-auto text-center text-lg">
+              Everything you need to know about planning your perfect Sicilian getaway, from seasonal tips to cultural insights
             </p>
-          </div>
+          </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredExperiences.map(experience => (
+            {guideCards.map((card, index) => (
               <motion.div
-                key={experience.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="bg-white rounded-lg overflow-hidden shadow-md"
+                key={card.id}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { 
+                    opacity: 1, 
+                    y: 0, 
+                    transition: { 
+                      duration: 0.5,
+                      delay: index * 0.1 
+                    } 
+                  }
+                }}
+                className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow"
               >
-                <div className="h-60 overflow-hidden">
-                  <img
-                    src={experience.image}
-                    alt={experience.title}
+                <div className="h-52 overflow-hidden">
+                  <Image 
+                    src={card.image}
+                    alt={card.title}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="p-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-bold text-primary">{experience.title}</h3>
-                    <span className="text-primary font-bold">€{experience.price}</span>
-                  </div>
+                  <h3 className="text-xl font-bold text-primary mb-3">{card.title}</h3>
+                  <p className="text-gray-700 mb-6 min-h-[160px]">{card.description}</p>
                   
-                  <div className="flex items-center text-sm text-gray-500 mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                  <Link 
+                    to={card.ctaLink}
+                    className="text-primary font-medium flex items-center hover:underline"
+                  >
+                    {card.ctaText}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 ml-1">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
-                    <span>{experience.location}</span>
-                    <span className="mx-2">•</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-                    <span>{experience.duration}</span>
-                  </div>
-                  
-                  <p className="text-gray-700 mb-6">{experience.description}</p>
-                  
-                  <div className="flex justify-between items-center">
-                    <button className="text-primary font-medium hover:underline">View Details</button>
-                    <button className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-colors">Book Now</button>
-                  </div>
+                  </Link>
                 </div>
               </motion.div>
             ))}
           </div>
-          
-          {filteredExperiences.length === 0 && (
-            <div className="text-center py-10">
-              <h3 className="text-xl font-medium text-gray-800">No experiences found</h3>
-              <p className="mt-2 text-gray-600">Try a different category or check back later!</p>
-            </div>
-          )}
         </div>
       </section>
 
-      {/* Call to Action - Custom Experience */}
+      {/* Bottom CTA Section */}
       <section className="py-16 bg-primary text-white">
         <div className="container-custom text-center">
-          <h2 className="text-3xl font-bold font-montserrat mb-6">Looking for something specific?</h2>
+          <h2 className="text-3xl font-bold font-montserrat mb-6">Ready to Experience All of Sicily?</h2>
           <p className="text-lg max-w-2xl mx-auto mb-8">
-            We can create custom experiences tailored to your interests. Let us design the perfect Sicilian adventure for you.
+            Our carefully crafted packages include everything mentioned above and more. Let us handle the details while you create unforgettable memories.
           </p>
-          <Link to="/contact" className="bg-white text-primary px-8 py-3 rounded font-bold hover:bg-gray-100 transition-colors">
-            Request Custom Experience
-          </Link>
+          <div className="flex flex-wrap justify-center gap-6">
+            <Link to="/packages" className="bg-white text-primary px-8 py-3 rounded font-bold hover:bg-gray-100 transition-colors">
+              View All Packages
+            </Link>
+            <a 
+              href="https://wa.me/1234567890" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="border-2 border-white text-white px-8 py-3 rounded font-bold hover:bg-white/10 transition-colors flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" className="mr-2">
+                <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+              </svg>
+              Message Us on WhatsApp
+            </a>
+          </div>
         </div>
       </section>
     </div>
   );
 };
 
-export default Experiences;
+export default TravelGuide;
