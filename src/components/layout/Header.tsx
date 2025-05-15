@@ -5,10 +5,6 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
   return (
     <header className="bg-transparent text-white absolute w-full z-50">
       <div className="container-custom py-4">
