@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { FiArrowLeft, FiCalendar, FiCheckCircle, FiClock, FiMap, FiXCircle } from 'react-icons/fi';
 import { Link, useParams } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { BackgroundImage } from '../components/ui';
 
 type PackageType = 'adventure' | 'cultural' | 'relax' | 'food';
 
@@ -175,13 +176,9 @@ const PackageDetail = () => {
       
       {/* Hero Banner */}
       <section className="relative h-[50vh] md:h-[65vh]">
-        <div 
+        <BackgroundImage 
+          src={packageData.image}
           className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: `url(${packageData.image})`, 
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/30 z-10"></div>
         

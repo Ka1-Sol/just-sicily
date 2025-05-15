@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { BackgroundImage } from '../components/ui';
 
 const Home = () => {
   return (
@@ -12,16 +13,17 @@ const Home = () => {
       />
     
       {/* Hero Section */}
-      <section className="relative min-h-screen bg-cover bg-center" style={{ 
-        backgroundImage: `url("https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=2000&auto=format&fit=crop")`,
-        backgroundPosition: 'center',
-        backgroundSize: 'cover'
-      }}>
+      <section className="relative min-h-screen">
+        <BackgroundImage 
+          src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=2000&auto=format&fit=crop"
+          className="absolute inset-0"
+        />
+        
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="absolute inset-0 bg-black/30 z-10"></div>
         
         {/* Content */}
-        <div className="relative container-custom h-full flex flex-col justify-between pt-24 pb-12 min-h-screen">
+        <div className="relative z-20 container-custom h-full flex flex-col justify-between pt-24 pb-12 min-h-screen">
           <div className="text-white max-w-3xl mt-20">
             <h1 className="text-6xl md:text-8xl font-bold leading-none mb-8 text-shadow-lg">
               <span className="block">WORLD</span>

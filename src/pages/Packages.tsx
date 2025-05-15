@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { FiCalendar, FiMap, FiSearch, FiTag } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { BackgroundImage, Image } from '../components/ui';
 
 type PackageType = 'all' | 'adventure' | 'cultural' | 'relax' | 'food';
 
@@ -134,15 +135,12 @@ const Packages = () => {
       {/* Hero Section */}
       <section className="relative h-[50vh] md:h-[60vh] bg-gray-800">
         {/* Background Image */}
-        <div 
+        <BackgroundImage 
+          src="https://cdn.pixabay.com/photo/2019/01/17/08/03/sicily-3937734_1280.jpg"
           className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: 'url("https://cdn.pixabay.com/photo/2019/01/17/08/03/sicily-3937734_1280.jpg")', 
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'brightness(0.7)',
-          }}
+          fallbackSrc="https://placehold.co/1200x800/0066CC/FFFFFF?text=Explore+Sicily"
         />
+        <div className="absolute inset-0 z-10 bg-black/30" style={{ filter: 'brightness(0.7)' }}></div>
         
         {/* Content */}
         <div className="relative z-20 container-custom h-full flex flex-col justify-center">
@@ -236,7 +234,7 @@ const Packages = () => {
               >
                 {/* Image container with tags */}
                 <div className="relative h-64 overflow-hidden group">
-                  <img 
+                  <Image 
                     src={pkg.image}
                     alt={pkg.title}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
