@@ -171,7 +171,7 @@ const Packages = () => {
       </section>
 
       {/* Filters */}
-      <section className="bg-white py-8 border-b sticky top-0 z-30 shadow-sm">
+      <section className="bg-white py-8 border-b relative z-20 shadow-sm">
         <div className="container-custom">
           <div className="flex flex-wrap gap-4">
             <button 
