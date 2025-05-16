@@ -7,11 +7,11 @@ import { Layout } from './components/layout';
 
 // Pages
 import About from './pages/About';
-import TravelGuide from './pages/Experiences';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import PackageDetail from './pages/PackageDetail';
 import Packages from './pages/Packages';
+import TravelGuide from './pages/TravelGuide';
 
 function App() {
   return (
@@ -24,7 +24,6 @@ function App() {
             <Route path="/packages/:packageId" element={<PackageDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="/experiences" element={<TravelGuide />} />
-            <Route path="/travel-guide" element={<TravelGuide />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
