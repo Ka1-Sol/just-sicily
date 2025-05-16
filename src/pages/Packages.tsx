@@ -133,7 +133,7 @@ const Packages = () => {
       />
       
       {/* Hero Section */}
-      <section className="relative h-[50vh] md:h-[60vh] bg-gray-800">
+      <section className="relative h-[60vh] md:h-[60vh] bg-gray-800">
         {/* Background Image */}
         <BackgroundImage 
           src="https://cdn.pixabay.com/photo/2019/01/17/08/03/sicily-3937734_1280.jpg"
@@ -143,15 +143,15 @@ const Packages = () => {
         <div className="absolute inset-0 z-10 bg-black/30" style={{ filter: 'brightness(0.7)' }}></div>
         
         {/* Content */}
-        <div className="relative z-20 container-custom h-full flex flex-col justify-center">
+        <div className="relative z-20 container-custom h-full flex flex-col justify-center pt-16 md:pt-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-white max-w-3xl"
           >
-            <h1 className="text-5xl md:text-6xl font-bold font-montserrat mb-4">Discover Sicily</h1>
-            <p className="text-xl md:text-2xl max-w-xl mb-8">
+            <h1 className="text-4xl md:text-6xl font-bold font-montserrat mb-2 md:mb-4">Discover Sicily</h1>
+            <p className="text-lg md:text-2xl max-w-xl mb-6 md:mb-8">
               Curated travel packages with expert guides, authentic experiences, and unforgettable memories.
             </p>
             
